@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}本一覧{% endblock %}
+{% block content %}
+
+<h2 class="site-h2">本一覧</h2>
+
+<p><a href="{{ url_for('books.books_new') }}" class="btn btn-primary">本の新規登録</a>
+<a href="{{ url_for('book_genres.book_genres_list') }}" class="btn btn-primary">ジャンルの一覧</a></p>
+
+<!-- フラッシュメッセージ（削除完了メッセージ表示） -->
+{% for message in get_flashed_messages() %}
+<span class="flash">{{ message }}</span>
+{% endfor %}
+
+<!-- フィルターを用いて、本のリストの件数を表示 -->
+<div class="message-box">登録済みの本：
+    {{ books_all| length }}件
+</div>
+
+<!-- views.pyから渡されたbooksが1件以上あれば一覧テーブルを表示する -->
+{% if books %}
+<table class="mt-16">
+    <!-- 表の見出し -->
+    <tr>
+        <th>ID</th>
+        <th>タイトル</th>
+        <th>著者</th>
+        <th>ジャンル</th>
+        <th>在庫</th>
+        <th>編集</th>
+        <th>削除</th>
+    </tr>
+    <!--  books（DBの中身）をループして1行ずつ表示する -->
+    {% for book, genre_name in books %}
+    <!-- 表のデータ -->
+    <tr>
+        <!-- 本IDデータ -->
+        <td>{{ book.book_id }}</td>
+        <!-- タイトルデータ（英語のみ先頭大文字、フィルター） -->
+        <td>
+            {{ book.title| capitalize }}
+        </td>
+        <!-- 著者データ -->
+        <td>{{ book.author }}</td>
+        <!-- ジャンル名データ -->
+        <td>{{ genre_name }}</td>
+
+        <!-- 在庫が0なら赤字にする＆在庫なしと表示（自作フィルター） -->
+        {% if book.stock == 0 %}
+        <td><span style="color:red">{{ book.stock| stock_zero }}</span></td>
+        {% else %}
+        <td>{{ book.stock| stock_zero }}</td>
+        {% endif %}
+
+        
+        <!-- 編集ページへのリンク。books.book_idをURLに渡して対象の本を特定する -->
+        <td>
+            <a href="{{ url_for('books.books_update', id=book.book_id) }}" class="btn btn-secondary">編集</a>
+        </td>
+        <!-- 削除 -->
+        <!-- 削除確認： https://note.com/howahowanote/n/n3d8ad39bcbf8 -->
+        <td>
+            <form method="post" action="{{ url_for('books.books_delete', id=book.book_id) }}">
+                {{ form.hidden_tag() }}
+                {{ form.submit(class="btn btn-danger", onclick="return confirm('本当に削除しますか？')") }}
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<!-- ページネーション -->
+<!-- 総ページが1より大きい場合は、ページネーションを作る -->
+{% if total_pages > 1 %}
+<div style="margin-top: 20px;">
+
+    <!-- 今のページ番号が1より大きいなら「前へ」作る -->
+    {% if page > 1 %}
+        <a href="{{ url_for('books.books_list', page=page-1) }}">前へ</a>
+    <!-- 今のページ番号が1ページ目なら、前へは文字のみ -->
+    {% else %}
+        <span style="color: grey;">前へ</span>
+    {% endif %}
+
+    <!-- 今のページ番号 /　総ページ数　の表示 -->
+    <span style="margin: 0 12px;">{{ page }} / {{ total_pages }}</span>
+
+    <!-- 今のページ番号が総ページ数（最後）でなければ「次へ」作る -->
+    {% if page < total_pages %}
+        <a href="{{ url_for('books.books_list', page=page+1) }}">次へ</a>
+    <!-- 今のページ番号が最後のページなら、次へは文字のみ -->
+    {% else %}
+        <span style="color: grey;">次へ</span>
+    {% endif %}
+</div>
+{% endif %}
+
+<!-- views.pyから渡されたbooksが1件もない -->
+{% else %}
+<p class="mt-16">本が登録されていません。</p>
+{% endif %}
+
+{% endblock %}

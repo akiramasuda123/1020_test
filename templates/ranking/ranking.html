@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}統計情報{% endblock %}
+{% block content %}
+
+<div>
+    <h2 class="site-h2">統計情報</h2>
+    
+    
+    <h3>本別貸出ランキング</h3>
+    <!-- views.pyから渡されたbooksが1件以上あれば表示する -->
+    {% if books %}
+    <ul style="list-style: none;">
+        <!--  books（DBの中身）をループして1行ずつ表示する -->
+        <!-- ループのインデックスを取得：https://tkstock.site/2023/07/26/python-flask-jinja2-roop-index/ -->
+        {% for book in books %}
+        <li>{{ loop.index }}位：{{ book.title }}（貸出回数：{{ book.book_borrowed_count }}回）</li>
+        {% endfor %}
+    </ul>
+    <!-- views.pyから渡されたbooksが1件もない -->
+    {% else %}
+    <p class="mt-16">本が貸出されていないため、統計が取れません。</p>
+    {% endif %}
+
+    <hr>
+
+    <h3>利用者別貸出ランキング</h3>
+    <!-- views.pyから渡されたusersが1件以上あれば表示する -->
+    {% if users %}
+    <ul style="list-style: none;">
+        <!--  users（DBの中身）をループして1行ずつ表示する -->
+        <!-- ループのインデックスを取得：https://tkstock.site/2023/07/26/python-flask-jinja2-roop-index/ -->
+        {% for user in users %}
+        <li>{{ loop.index }}位：{{ user.name }}（貸出回数：{{ user.user_borrowed_count }}回）</li>
+        {% endfor %}
+    </ul>
+    <!-- views.pyから渡されたusersが1件もない -->
+    {% else %}
+    <p class="mt-16">本が貸出されていないため、統計が取れません。</p>
+    {% endif %}
+
+    <hr>
+
+    <h3>ジャンル別貸出ランキング</h3>
+    <!-- views.pyから渡されたgenresが1件以上あれば表示する -->
+    {% if genres %}
+    <ul style="list-style: none;">
+        <!--  genres（DBの中身）をループして1行ずつ表示する -->
+        <!-- ループのインデックスを取得：https://tkstock.site/2023/07/26/python-flask-jinja2-roop-index/ -->
+        {% for genre in genres %}
+        <li>{{ loop.index }}位：{{ genre.genre_name }}（貸出回数：{{ genre.genre_borrowed_count }}回）</li>
+        {% endfor %}
+    </ul>
+    <!-- views.pyから渡されたgenresが1件もない -->
+    {% else %}
+    <p class="mt-16">本が貸出されていないため、統計が取れません。</p>
+    {% endif %}
+
+</div>
+{% endblock %}

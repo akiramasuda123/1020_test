@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}本のジャンル一覧{% endblock %}
+{% block content %}
+
+<h2 class="site-h2">本のジャンル一覧</h2>
+
+<!-- ジャンル登録へ -->
+<p><a href="{{ url_for('book_genres.book_genres_new') }}" class="btn btn-primary">ジャンルの新規登録</a></p>
+
+<!-- フラッシュメッセージ（ログイン失敗時のエラー表示） -->
+{% for message in get_flashed_messages() %}
+<span class="flash">{{ message }}</span>
+{% endfor %}
+
+<!-- フィルターを用いて、ジャンルのリストの件数を表示 -->
+<div class="message-box">登録済みのジャンル：
+    {{ book_genres_all| length}}件
+</div>
+
+<!-- views.pyから渡されたbook_genresが1件以上あれば一覧テーブルを表示する -->
+{% if book_genres %}
+<table class="mt-16">
+    <!-- 表の見出し -->
+    <tr>
+        <th>ID</th>
+        <th>ジャンル名</th>
+        <th>編集</th>
+        <th>削除</th>
+    </tr>
+    <!--  genres（DBの中身）をループして1行ずつ表示する -->
+    {% for genre in book_genres %}
+    <!-- 表のデータ -->
+    <tr>
+        <!-- ジャンルIDのデータ -->
+        <td>{{ genre.genre_id }}</td>
+        <!-- ジャンル名のデータ -->
+        <td>{{ genre.genre_name }}</td>
+        
+        <!-- 編集ページへのリンク。genre_idをURLに渡して対象の本を特定する -->
+        <td>
+            <a href="{{ url_for('book_genres.book_genres_update', id=genre.genre_id) }}" class="btn btn-secondary">編集</a>
+        </td>
+        
+        <!-- 削除ボタン -->
+        <!-- 削除確認： https://note.com/howahowanote/n/n3d8ad39bcbf8 -->
+        <td>
+            <form method="post" action="{{ url_for('book_genres.book_genres_delete', id=genre.genre_id) }}">
+                {{ form.hidden_tag() }}
+                {{ form.submit(class="btn btn-danger", onclick="return confirm('削除しますか？')") }}
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<!-- ページネーション -->
+<!-- 総ページが1より大きい場合は、ページネーションを作る -->
+{% if total_pages > 1 %}
+<div style="margin-top: 20px;">
+
+    <!-- 今のページ番号が1より大きいなら「前へ」作る -->
+    {% if page > 1 %}
+        <a href="{{ url_for('book_genres.book_genres_list', page=page-1) }}">前へ</a>
+    <!-- 今のページ番号が1ページ目なら、前へは文字のみ -->
+    {% else %}
+        <span style="color: grey;">前へ</span>
+    {% endif %}
+
+    <!-- 今のページ番号 /　総ページ数　の表示 -->
+    <span style="margin: 0 12px;">{{ page }} / {{ total_pages }}</span>
+
+    <!-- 今のページ番号が総ページ数（最後）でなければ「次へ」作る -->
+    {% if page < total_pages %}
+        <a href="{{ url_for('book_genres.book_genres_list', page=page+1) }}">次へ</a>
+    <!-- 今のページ番号が最後のページなら、次へは文字のみ -->
+    {% else %}
+        <span style="color: grey;">次へ</span>
+    {% endif %}
+</div>
+{% endif %}
+
+<p><a href="{{ url_for('books.books_list') }}">本の一覧へ戻る</a></p>
+
+{% else %}
+<p class="mt-16">ジャンルが登録されていません。</p>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}新規貸出の登録{% endblock %}
+{% block content %}
+
+<div>
+    <h2 class="site-h2">新規貸出の登録</h2>
+
+    <form method="post">
+        
+        <!-- CSRFトークン（セキュリティ対策） -->   
+        {{ form.hidden_tag() }}
+
+        <!-- 利用者の入力 -->
+        <div class="form-group">
+            
+            <!-- forms.pyで指定したラベルを表示 -->
+            {{ form.user_id.label }}
+            <!-- forms.pyで指定したタイトル -->
+            {{ form.user_id(class="form-control") }}
+            <br>
+            <!-- バリデーションエラーメッセージ（forms.pyで指定したエラーメッセージ） -->
+            {% for error in form.user_id.errors %}
+            <span class="error">{{ error }}</span>
+            {% endfor %}
+        
+        </div>
+
+        <!-- 本のタイトルの入力 -->
+        <div class="form-group">
+
+            <!-- forms.pyで指定したラベルを表示 -->
+            {{ form.book_id.label }}
+            <!-- forms.pyで指定した著者 -->
+            {{ form.book_id(class="form-control") }}
+            <br>
+            <!-- バリデーションエラーメッセージ（forms.pyで指定したエラーメッセージ） -->
+            {% for error in form.book_id.errors %}
+            <span class="error">{{ error }}</span>
+            {% endfor %}
+
+        </div>
+
+        <!-- 返却予定日の入力 -->
+        <div class="form-group">
+
+            <!-- forms.pyで指定したラベルを表示 -->
+            {{ form.due_date.label }}
+            <!-- forms.pyで指定したジャンル -->
+            {{ form.due_date(class="form-control") }}
+            <br>
+            <!-- バリデーションエラーメッセージ（forms.pyで指定したエラーメッセージ） -->
+            {% for error in form.due_date.errors %}
+            <span class="error">{{ error }}</span>
+            {% endfor %}
+
+        </div>
+
+        <!-- 登録ボタン -->
+        {{ form.submit(class="btn btn-primary") }}
+    </form>
+
+    <!-- 本の一覧へ戻る -->
+    {# <p class="mt-16"><a href="{{ url_for('borrows.borrows_active_list') }}">貸出中の一覧へ戻る</a></p> #}
+</div>
+
+{% endblock %}

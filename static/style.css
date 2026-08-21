@@ -1,0 +1,327 @@
+/* auth(ログイン、サインアップ用)=================================================================== */
+/* 参考：Python FlaskによるWebアプリ開発入門：P177,178の見た目を参考 */
+
+/* authのbody */
+.auth-body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #d1f7d8;
+}
+
+/* authのメイン部分 */
+.auth-main {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* authのカード */
+.auth-login,
+.auth-signup {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    width: 360px;
+}
+
+/* authの見出し「ログイン、ユーザー新規登録」 */
+.auth-login h1,
+.auth-signup h1 {
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+/* authの送信ボタン */
+.auth-btn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #4a9e6d;
+    color: #fff;
+}
+
+/* authの送信ボタンのhover */
+.auth-btn:hover {
+    background-color: #3a8a4b;
+}
+
+/* フォームの全体像 */
+.form-group {
+    margin-bottom: 14px;
+}
+
+/* ===================================================================================================== */
+
+/* エラーハンドラー====================================================== */
+html.errorhandler{
+    background: #025826b6;
+}
+body.errorhandler {
+  text-align: center;
+  color: white;
+  padding-top: 30px;
+  font-weight: bold;
+}
+h1.errorhandler {
+  font-size: 80px;
+}
+h2.errorhandler {
+  font-size: 20px;
+}
+a.errorhandler{
+  color: white;
+}
+/* ============================================================================ */
+
+/* メインアプリ==================================================================================== */
+/* 
+・フッターを一番下に固定する
+https://watashi.xyz/css-sticky-footer/ 
+*/
+
+/* サイトのボディ */
+.site-body{
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/*　サイトのヘッダー */
+.site-header {
+    background-color: #014902;
+    padding: 30px 50px;
+}
+
+/* ヘッダの中身 */
+.header-inner {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+/* メインコンテンツ */
+.main-content {
+    flex: 1;
+    width: 85%;
+    margin: 28px auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+/* フッター */
+.site-footer {
+    text-align: center;
+    padding: 15px;
+    margin-top: 40px;
+    border-top: 1px solid #ddd;
+    font-size: 15px;
+    color: white;
+    background-color: #014902;
+}
+
+/* 図書館貸出管理システムのタイトル */
+.site-title {
+    color: white;
+    font-weight: bold;
+    font-size: 25px;
+    padding-right: 25px;
+}
+
+/* ナビゲーション全体 */
+.nav-links {
+    display: flex;
+    gap: 15px;
+    flex: 1;
+    color: white;
+}
+
+/* ナビゲーションのリンク */
+.nav-links a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 15px;
+}
+
+/* ナビゲーションのリンククリック時 */
+.nav-links a:hover {
+    text-decoration: underline;
+    color: #fff;
+}
+
+/* ログインユーザー表示 */
+.user-info {
+    /* display: flex; */
+    align-items: center;
+    gap: 12px;
+    color: rgb(243, 220, 91);
+}
+
+/* ログアウトの文字リンク */
+.user-info a {
+    color: rgb(243, 220, 91);
+}
+
+/* トップ画面のリンク */
+.home-a{
+    color: black;
+}
+
+/* セクション見出し */
+.site-h2 {
+    font-size: 30px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #126d04;
+    padding-bottom: 6px;
+}
+
+/* リストの件数表示 */
+.message-box{
+    color: blue;
+    font-weight: bold;
+}
+
+/* テーブル全体 */
+table {
+    width: 100%;
+    /* 表の横の線無くす */
+    border-collapse: collapse;
+    margin-top: 12px;
+    background-color: #fff;
+}
+
+/* 表のヘッダー行 */
+th {
+    background-color: #4bb166;
+    color: #fff;
+    padding: 10px 12px;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* 表のデータ行 */
+td {
+    padding: 9px 12px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    font-size: 15px;
+}
+
+/* フォームのラベル */
+.form-group label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+/* フォームの入力欄・セレクトボックス */
+.form-group input,
+.form-group select {
+    padding: 8px 10px;
+    border: 1px solid #bbb;
+    border-radius: 3px;
+    font-size: 15px;
+    width: 100%;
+    max-width: 320px;
+}
+
+/* 検索フォーム */
+.seach-form{
+    display: flex;
+    align-items: center; 
+    gap: 30px; 
+    margin-bottom: 10px;
+}
+
+/* バリデーションエラー文字 */
+.error {
+    color: red;
+    font-size: 14px;
+}
+
+/* フラッシュメッセージ（エラー） */
+.flash {
+    color: red;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* ボタン基本スタイル */
+.btn {
+    display: inline-block;
+    padding: 7px 18px;
+    border: none;
+    border-radius: 3px;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+/* 主要ボタン（緑） */
+.btn-primary {
+    background-color: #4a9e6d;
+    color: #fff;
+}
+
+/* 主要ボタンのhover */
+.btn-primary:hover {
+    background-color: #3a8a4b;
+}
+
+/* サブボタン（グレー） */
+.btn-secondary {
+    background-color: #888;
+    color: #fff;
+}
+
+/* サブボタン（リンク型・グレー） */
+.btn-secondary-clear {
+    background-color: #888;
+    color: #fff;
+    text-decoration: none;
+}
+
+/* サブボタン（リンク型）のhover */
+.btn-secondary-clear:hover {
+    background-color: #666;
+    color: #fff;
+    text-decoration: none;
+}
+
+/* サブボタンのhover */
+.btn-secondary:hover {
+    background-color: #666;
+}
+
+/* 削除ボタン（赤） */
+.btn-danger {
+    background-color: #c0392b;
+    color: #fff;
+}
+
+/* 削除ボタンのhover */
+.btn-danger:hover {
+    background-color: #a93226;
+}
+
+/* リンクのデフォルト色 */
+a {
+    color: #529e4a;
+}
+
+/* リンクのhover */
+a:hover {
+    text-decoration: underline;
+}
+/* ===================================================================== */

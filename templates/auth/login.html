@@ -1,0 +1,60 @@
+<!-- 画面作成の参考：Python FlaskによるWebアプリ開発入門：P158 -->
+{% extends "auth/base.html" %}
+{% block title %}ログイン{% endblock %}
+{% block content %}
+
+<!-- 全体 -->
+<div class="auth-main">
+
+    <!-- ログインカード -->
+    <div class="auth-login">
+        
+        <h1>ログイン</h1>
+            
+            <form method="post">
+                
+                <!-- フラッシュメッセージ（ログイン失敗時のエラー表示） -->
+                <div style="text-align: center;">
+                {% for message in get_flashed_messages() %}
+                <span class="flash">{{ message }}</span>
+                {% endfor %}
+                </div>
+
+                <!-- CSRFトークン（セキュリティ対策） -->
+                {{ form.hidden_tag() }}
+                
+                <!-- ユーザー名入力 -->
+                <div class="form-group">
+                {{ form.username(class="auth-input",placeholder="ユーザー名") }}
+                <!-- バリデーションエラーメッセージ（forms.pyで指定したエラーメッセージ） -->
+                <br>
+                {% for error in form.username.errors %}
+                <span class="error">{{ error }}</span>
+                {% endfor %}
+                </div>
+
+                <!-- パスワード入力 -->
+                <div class="form-group">
+                {{ form.password(class="auth-input",placeholder="パスワード") }}
+                <!-- バリデーションエラーメッセージ（forms.pyで指定したエラーメッセージ） -->
+                <br>
+                {% for error in form.password.errors %}
+                <span class="error">{{ error }}</span>
+                {% endfor %}
+                </div>
+
+                <!-- パスワード表示 -->
+                <input type="checkbox" id="chk1">パスワード表示<br>              
+                <br>
+
+                <!-- 送信ボタン -->
+                {{ form.submit(class="auth-btn") }}
+            </form>
+            <!-- サインアップ -->
+            <p style="text-align: center;">アカウントをお持ちでない方は<a href="{{url_for('auth.signup')}}">こちら</a></p>
+
+    </div>
+
+</div>
+
+{% endblock %}

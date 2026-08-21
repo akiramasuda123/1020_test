@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <title>{% block title %}{% endblock %} | 図書館貸出管理システム</title>
+</head>
+
+<!-- サイト全体 -->
+<body class="site-body">
+
+    <!-- ヘッダー -->
+    <header class="site-header">
+        <!-- ヘッダー内部 -->
+        <div class="header-inner">
+            <!-- システムタイトル -->
+            <span class="site-title">図書館貸出管理システム</span>
+            
+            <!-- ナビゲーション -->
+            <nav class="nav-links">
+                <a href="{{ url_for('home') }}">ホーム</a>|
+                <a href="{{ url_for('books.books_list') }}">本管理</a>|
+                <a href="{{ url_for('users.users_list') }}">利用者管理</a>|
+                <a href="{{ url_for('borrows.borrows_active_list') }}">貸出一覧</a>|
+                <a href="{{ url_for('borrows.borrows_new') }}">新規貸出</a>|
+                <a href="{{ url_for('ranking.ranking_list') }}">統計情報</a>
+            </nav>
+            
+            <!-- ログインしていれば、処理（gの利用） -->
+            {% if g.user %}
+            <div class="user-info">
+                
+                <!-- ログインしているユーザー名表示 -->
+                <span>ログインユーザー：{{ g.user.username }}さん</span><br>
+                <a href="{{ url_for('auth.logout') }}">ログアウト</a>はこちら
+            </div>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- メイン -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- フッター -->
+    <footer class="site-footer">
+        <p>&copy; masuda_akira_kouka</p>
+    </footer>
+
+</body>
+</html>

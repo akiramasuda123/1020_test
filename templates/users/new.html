@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}利用者の新規登録{% endblock %}
+{% block content %}
+
+<div>
+    <h2 class="site-h2">利用者の新規登録</h2>
+
+    <form method="post">
+
+        <!-- CSRFトークン（セキュリティ対策） -->   
+        {{ form.hidden_tag() }}
+
+        <!-- 利用者名の入力 -->
+        <div class="form-group">
+            
+            <!-- forms.pyで指定したラベルを表示 -->
+            {{ form.name.label }}
+            <!-- forms.pyで指定したタイトル -->
+            {{ form.name(class="form-control") }}
+            <br>
+            <!-- バリデーションエラーメッセージ（forms.pyで指定したエラーメッセージ） -->
+            {% for error in form.name.errors %}
+            <span class="error">{{ error }}</span>
+            {% endfor %}
+        
+        </div>
+
+        <!-- メールアドレスの入力 -->
+        <div class="form-group">
+
+            <!-- forms.pyで指定したラベルを表示 -->
+            {{ form.email.label }}
+            <!-- forms.pyで指定した著者 -->
+            {{ form.email(class="form-control") }}
+            <br>
+            <!-- バリデーションエラーメッセージ（forms.pyで指定したエラーメッセージ） -->
+            {% for error in form.email.errors %}
+            <span class="error">{{ error }}</span>
+            {% endfor %}
+
+        </div>
+
+        <!-- 登録ボタン -->
+        {{ form.submit(class="btn btn-primary") }}
+    </form>
+
+    <!-- 利用者の一覧へ戻る -->
+    <p class="mt-16"><a href="{{ url_for('users.users_list') }}">利用者の一覧へ戻る</a></p>
+</div>
+
+{% endblock %}

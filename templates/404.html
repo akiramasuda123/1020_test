@@ -1,0 +1,20 @@
+
+<!-- 404エラーデザイン参考ページ：https://dattesar.com/flask-paginate/ -->
+
+<!DOCTYPE html>
+<html lang="ja" class="errorhandler">
+<head>
+    <meta charset="UTF-8">
+    <title>404error</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body class="errorhandler">
+<div id="base">
+    <h1 class="errorhandler">404<br>File Not Found</h1>
+    <h2 class="errorhandler">アクセスしようとしたページは見つかりませんでした。</h2>
+    <p><a href="{{ url_for('home') }}" class="errorhandler">図書館貸出管理システムへ戻る</a></p>
+</div>
+</body>
+</html>
+
+

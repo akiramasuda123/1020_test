@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block title %}貸出中一覧{% endblock %}
+{% block content %}
+
+<h2 class="site-h2">貸出中一覧</h2>
+
+<!-- 検索フォーム -->
+<form method="GET" action="{{ url_for('borrows.borrows_active_list') }}" class="seach-form">
+
+        <!-- 検索入力バー -->
+        <!-- value="{{ search_keyword }}"：検索後も、検索バーに入力した内容を保持しておく -->
+        検索：<input type="search" placeholder="検索ワードを入力" name="search" value="{{ search_keyword }}" style="width: 300px; height: 50px;" />
+
+        <!-- 検索ボタン -->
+        <button type="submit" class="btn btn-primary">検索</button>
+        <!-- 検索バーが使われていれば、クリアボタン（全件一覧のURLを表示） -->
+        {% if search_keyword %}
+            <a href="{{ url_for('borrows.borrows_active_list') }}" class="btn btn-secondary-clear">クリア</a>
+        {% endif %}
+
+
+        <!-- ラジオボタンの選択保持（checked）：https://qiita.com/Bashi50/items/457d3b8a2328b2b1d012 -->
+        <!-- ラジオボタン: 検索対象 -->
+        <!-- 利用者ラジオボタン -->
+        <label>
+            <!-- もし、利用者が選択orデフォルトの状態ならば、ラジオボタンの選択を画面再読み込み後も選択状態を保持する
+             {% if search_type == 'user' or not search_type %}checked{% endif %} -->
+            <input type="radio" name="search_type" value="user" {% if search_type == 'user' or not search_type %}checked{% endif %}> 利用者
+        </label>
+        <!-- 本のタイトルラジオボタン -->
+        <label>
+            <input type="radio" name="search_type" value="title" {% if search_type == 'title' %}checked{% endif %}> 本のタイトル
+        </label>
+
+</form>
+
+<p><a href="{{ url_for('borrows.borrows_deactive_list') }}" class="btn btn-primary">過去の貸出履歴</a></p>
+
+
+<!-- フラッシュメッセージ（返却完了表示） -->
+{% for message in get_flashed_messages() %}
+<span class="flash">{{ message }}</span>
+{% endfor %}
+
+
+<!-- フィルターを用いて、本のリストの件数を表示 -->
+<div class="message-box">貸出中：
+    {{borrows_active_all| length}}件
+</div>
+
+<!-- views.pyから渡されたborrows_activeが1件以上あれば一覧テーブルを表示する -->
+{% if borrows_active %}
+<table class="mt-16">
+    <!-- 表の見出し -->
+    <tr>
+        <th>ID</th>
+        <th>利用者</th>
+        <th>本のタイトル</th>
+        <th>貸出日</th>
+        <th>返却予定日</th>
+        <th>返却</th>
+        <!-- <th>削除</th> -->
+    </tr>
+    <!--  books（DBの中身）をループして1行ずつ表示する -->
+    {% for borrow_active, name,title in borrows_active %}
+    <!-- 表のデータ -->
+    {% if borrow_active.due_date == today %}
+    <tr style="background-color:yellow;">
+    {% elif borrow_active.due_date < today %}
+    <tr style="background-color: orange;">
+    {% else %}
+    <tr>
+    {% endif %}
+        <!-- 貸出IDのデータ -->
+        <td>{{ borrow_active.borrows_id }}</td>
+        <!-- 貸出の利用者名データ -->
+        <td>{{ name }}</td>
+        <!-- 貸出の本タイトルデータ -->
+        <td>{{ title }}</td>
+        <!-- 貸出日（自作フィルターで年月日表示） -->
+        <td>{{ borrow_active.borrowed_at| date_format }}</td>
+        <!-- 返却予定日（自作フィルターで年月日表示） -->
+        <td>{{ borrow_active.due_date| date_format }}</td>
+        <!-- もし返却日がnoneなら返却ボタンを作る（削除の構成を参考にしてる） -->
+        {% if borrow_active.returned_at is none %}
+        <td>
+        <form method="post" action="{{ url_for('borrows.borrows_return', id=borrow_active.borrows_id) }}">
+            {{ form.hidden_tag() }}
+            {{ form.submit(class="btn btn-secondary", onclick="return confirm('返却しても大丈夫ですか？')") }}
+        </form>
+        </td>
+        {% endif %}
+        <!-- 削除
+        削除確認： https://note.com/howahowanote/n/n3d8ad39bcbf8 -->
+        <!-- <td>
+            <form method="post" action="{{ url_for('borrows.borrows_delete', id=borrow_active.borrows_id) }}">
+                {{ form.hidden_tag() }}
+                {{ form.submit(class="btn btn-danger", onclick="return confirm('本当に削除しますか？')") }}
+            </form>
+        </td> -->
+
+    </tr>
+    {% endfor %}
+</table>
+
+<!-- ページネーション -->
+<!-- 総ページが1より大きい場合は、ページネーションを作る -->
+{% if total_pages > 1 %}
+<div style="margin-top: 20px;">
+
+    <!-- 今のページ番号が1より大きいなら「前へ」作る -->
+    {% if page > 1 %}
+        <a href="{{ url_for('borrows.borrows_active_list', page=page-1, search=search_keyword, search_type=search_type) }}">前へ</a>
+    {% else %}
+        <span style="color: grey;">前へ</span>
+    {% endif %}
+
+    <!-- 今のページ番号 /　総ページ数　の表示 -->
+    <span style="margin: 0 12px;">{{ page }} / {{ total_pages }}</span>
+
+    <!-- 今のページ番号が総ページ数（最後）でなければ「次へ」作る -->
+    {% if page < total_pages %}
+        <a href="{{ url_for('borrows.borrows_active_list', page=page+1, search=search_keyword, search_type=search_type) }}">次へ</a>
+    {% else %}
+        <span style="color: grey;">次へ</span>
+    {% endif %}
+
+</div>
+{% endif %}
+
+<div style="margin-top: 12px;">
+<p style="color: blue;">
+※黄色網掛けの貸出データは今日が返却予定日です。<br>
+※橙色網掛けの貸出データは返却予定日を過ぎています。
+</p>
+</div>
+
+{% else %}
+<p class="mt-16">現在貸出はされていません。</p>
+{% endif %}
+{% endblock %}

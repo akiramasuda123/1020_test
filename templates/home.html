@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}トップ{% endblock %}
+{% block content %}
+
+<div>
+    <h2 class="site-h2">図書館貸出管理アプリへようこそ</h2>
+    <h3><a href="{{ url_for('books.books_list') }}" class="home-a">本の一覧・管理</a></p></h3>
+    <ul>
+        <li>本の一覧表示</li>
+        <li>本の新規登録</li>
+        <li>本の登録内容更新</li>
+        <li>本の登録内容削除</li>
+    </ul>
+    <hr>
+    <h3><a href="{{ url_for('users.users_list') }}" class="home-a">利用者の一覧・管理</a></p></h3>
+    <ul>
+        <li>利用者の一覧表示</li>
+        <li>利用者の新規登録</li>
+        <li>利用者の登録内容更新</li>
+        <li>利用者の登録内容削除</li>
+    </ul>
+    <hr>
+    <h3><a href="{{ url_for('borrows.borrows_active_list') }}" class="home-a">貸出の本一覧</a></p></h3>
+    <ul>
+        <li>貸出中の本一覧表示</li>
+        <li>貸出履歴（返却済み）の一覧表示</li>
+    </ul>
+    <hr>
+    <h3><a href="{{ url_for('borrows.borrows_new') }}" class="home-a">新規貸出</a></p></h3>
+    <ul>
+        <li>どの本をどの利用者に貸出するか登録</li>
+    </ul>
+    <hr>
+    <h3><a href="{{ url_for('ranking.ranking_list') }}" class="home-a">統計情報</a></p></h3>
+    <ul>
+        <li>貸出状況の統計閲覧</li>
+    </ul>
+</div>
+{% endblock %}

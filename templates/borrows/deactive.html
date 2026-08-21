@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block title %}貸出履歴（返却済）一覧{% endblock %}
+{% block content %}
+
+<h2 class="site-h2">貸出履歴（返却済）一覧</h2>
+
+<!-- 検索フォーム -->
+<form method="GET" action="{{ url_for('borrows.borrows_deactive_list') }}" class="seach-form">
+
+        <!-- 検索入力バー -->
+        検索：<input type="search" placeholder="検索ワードを入力" name="search" value="{{ search_keyword or '' }}" style="width: 300px; height: 50px;" />
+
+        <!-- 検索ボタン -->
+        <button type="submit" class="btn btn-primary">検索</button>
+        <!-- 検索欄が使われていれば、クリアボタン -->
+        {% if search_keyword %}
+            <a href="{{ url_for('borrows.borrows_deactive_list') }}" class="btn btn-secondary-clear">クリア</a>
+        {% endif %}
+
+        <!-- ラジオボタンの選択保持（checked）：https://qiita.com/Bashi50/items/457d3b8a2328b2b1d012 -->
+        <!-- ラジオボタン: 検索対象 -->
+        <!-- 利用者ラジオボタン -->
+        <label>
+            <!-- もし、利用者が選択orデフォルトの状態ならば、ラジオボタンの選択を画面再読み込み後も選択状態を保持する
+             ：{% if search_type == 'user' or not search_type %}checked{% endif %} -->
+            <input type="radio" name="search_type" value="user" {% if search_type == 'user' or not search_type %}checked{% endif %}> 利用者
+        </label>
+        <!-- 本のタイトルラジオボタン -->
+        <label>
+            <input type="radio" name="search_type" value="title" {% if search_type == 'title' %}checked{% endif %}> 本のタイトル
+        </label>
+
+</form>
+
+<p><a href="{{ url_for('borrows.borrows_active_list') }}" class="btn btn-primary">現在の貸出中一覧</a></p>
+
+
+<!-- フィルターを用いて、本のリストの件数を表示 -->
+<div class="message-box">貸出済み：
+    {{borrows_deactive_all| length}}件
+</div>
+
+<!-- views.pyから渡されたborrows_deactiveが1件以上あれば一覧テーブルを表示する -->
+{% if borrows_deactive %}
+<table class="mt-16">
+    <!-- 表の見出し -->
+    <tr>
+        <th>ID</th>
+        <th>利用者</th>
+        <th>本のタイトル</th>
+        <th>貸出日</th>
+        <th>返却予定日</th>
+        <th>返却日</th>
+        <th>滞納</th>
+    </tr>
+    <!--  books（DBの中身）をループして1行ずつ表示する -->
+    {% for borrow_deactive, name,title in borrows_deactive %}
+    
+    <!-- 表のデータ -->
+    <!-- 滞納（返却日が返却予定日を超えている）していたら赤字にする -->
+    {% if borrow_deactive.due_date < borrow_deactive.returned_at %} 
+    <tr style="background-color: red;color: white;">
+    {% else %}
+    <tr>
+    {% endif %}
+        <!-- 貸出IDのデータ -->
+        <td>{{ borrow_deactive.borrows_id }}</td>
+        <!-- 貸出の利用者名データ -->
+        <td>{{ name }}</td>
+        <!-- 貸出の本タイトルデータ -->
+        <td>{{ title }}</td>
+        <!-- 貸出日（自作フィルターで年月日表示） -->
+        <td>{{ borrow_deactive.borrowed_at| date_format }}</td>
+        <!-- 返却予定日（自作フィルターで年月日表示） -->
+        <td>{{ borrow_deactive.due_date| date_format }}</td>
+        <!-- 返却日（自作フィルターで年月日表示） -->
+        <td>{{ borrow_deactive.returned_at| date_format }}</td>
+        <!-- 滞納（返却日が返却予定日を超えている） -->
+        <td>
+            {% if borrow_deactive.due_date < borrow_deactive.returned_at %}
+            ○
+            {% endif %}
+        </td>
+    
+    </tr>
+    {% endfor %}
+</table>
+
+
+<!-- ページネーション -->
+<!-- 総ページが1より大きい場合は、ページネーションを作る -->
+{% if total_pages > 1 %}
+<div style="margin-top: 20px;">
+
+    <!-- 
+    今のページ番号が1より大きいなら「前へ」作る
+    ・search=search_keyword： 検索キーワードを維持してパラメータに含める
+    ・search_type=search_type： 検索対象（ラジオボタンの値）を維持してパラメータに含める
+    セットで渡して、検索結果を保持したまま前のページへ戻す
+    -->
+    {% if page > 1 %}
+        <a href="{{ url_for('borrows.borrows_deactive_list', page=page-1, search=search_keyword, search_type=search_type) }}">前へ</a>
+    {% else %}
+        <span style="color: grey;">前へ</span>
+    {% endif %}
+
+    <!-- 今のページ番号 /　総ページ数　の表示 -->
+    <span style="margin: 0 12px;">{{ page }} / {{ total_pages }}</span>
+
+    <!-- 
+    今のページ番号が総ページ数（最後）でなければ「次へ」作る
+    ・search=search_keyword： 検索キーワードを維持してパラメータに含める
+    ・search_type=search_type： 検索対象（ラジオボタンの値）を維持してパラメータに含める
+    セットで渡して、検索結果を保持したまま次のページへ進む
+    -->
+    {% if page < total_pages %}
+        <a href="{{ url_for('borrows.borrows_deactive_list', page=page+1, search=search_keyword, search_type=search_type) }}">次へ</a>
+    {% else %}
+        <span style="color: grey;">次へ</span>
+    {% endif %}
+
+</div>
+{% endif %}
+
+<div style="margin-top: 12px;">
+<p style="color: blue;">
+※赤色網掛けの貸出データは滞納したデータです
+</p>
+</div>
+
+{% else %}
+<p class="mt-16">現在貸出はされていません。</p>
+{% endif %}
+
+{% endblock %}

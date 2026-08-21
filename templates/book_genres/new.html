@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}ジャンルの新規登録{% endblock %}
+{% block content %}
+
+<div>
+    <h2 class="site-h2">ジャンルの新規登録</h2>
+
+    <form method="post">
+
+        <!-- CSRFトークン（セキュリティ対策） -->
+        {{ form.hidden_tag() }}
+
+        <!-- ジャンルの入力 -->
+        <div class="form-group">
+
+            <!-- forms.pyで指定したラベルを表示 -->
+            {{ form.genre_name.label }}
+            <!-- forms.pyで指定したジャンル -->
+            {{ form.genre_name(class="form-control") }}
+            <br>
+            <!-- バリデーションエラーメッセージ（forms.pyで指定したエラーメッセージ） -->
+            {% for error in form.genre_name.errors %}
+            <span class="error">{{ error }}</span>
+            {% endfor %}
+
+        </div>
+
+        <!-- 登録ボタン -->
+        {{ form.submit(class="btn btn-primary") }}
+    </form>
+
+    <!-- ジャンルの一覧へ戻る -->
+    <p class="mt-16"><a href="{{ url_for('book_genres.book_genres_list') }}">ジャンルの一覧へ戻る</a></p>
+</div>
+
+{% endblock %}

@@ -1,0 +1,61 @@
+<!-- 参考：Python FlaskによるWebアプリ開発入門：P153 -->
+{% extends "auth/base.html" %}
+{% block title %}ユーザー新規登録{% endblock %}
+{% block content %}
+
+<!-- 全体 -->
+<div class="auth-main">
+    
+    <!-- サインアップカード -->
+    <div class="auth-signup">
+        
+        <h1>ユーザー新規登録</h1>
+            
+            <form method="post">
+                
+                <!-- CSRFトークン（セキュリティ対策） -->
+                {{ form.hidden_tag() }}                
+
+                <!-- ユーザー名入力 -->
+                <div class="form-group">
+                {{ form.username(placeholder="ユーザー名") }}
+                <!-- バリデーションエラーメッセージ（forms.pyで指定したエラーメッセージ） -->
+                <br>
+                {% for error in form.username.errors %}
+                <span class="error">{{ error }}</span>
+                {% endfor %}
+                </div>
+
+                <!-- メールアドレス入力 -->
+                <div class="form-group">
+                {{ form.email(placeholder="メールアドレス") }}
+                <!-- バリデーションエラーメッセージ（forms.pyで指定したエラーメッセージ） -->
+                <br>
+                {% for error in form.email.errors %}
+                <span class="error">{{ error }}</span>
+                {% endfor %}
+                </div>
+                
+                <!-- パスワード入力 -->
+                <div class="form-group">
+                {{ form.password(placeholder="パスワード") }}
+                <!-- バリデーションエラーメッセージ（forms.pyで指定したエラーメッセージ） -->
+                <br>
+                {% for error in form.password.errors %}
+                <span class="error">{{ error }}</span>
+                {% endfor %}
+                </div>
+
+                <!-- パスワード表示 -->
+                <input type="checkbox" id="chk1">パスワード表示<br>              
+                <br>
+
+                <!-- 送信ボタン -->
+                {{ form.submit(class="auth-btn") }}
+            
+            </form>
+            <p style="text-align: center;">アカウントをお持ちの方は<a href="{{url_for('auth.login')}}">こちら</a></p>
+
+    </div>
+</div>
+{% endblock %}
