@@ -1,0 +1,43 @@
+@startuml ログイン
+autonumber
+title ログイン (GET・POST /auth/login)
+
+actor 管理者 as user
+boundary "login.html" as ui
+control "auth/views.py" as flask
+entity "LoginUser\n(models.py)" as model
+database "SQLite\n(login_users)" as db
+
+== フォーム表示 ==
+user -> ui : ログインページアクセス
+ui -> flask : GET /auth/login
+flask -> ui : render_template('auth/login.html', form=form)
+ui --> user : ログインフォーム表示
+
+== 認証処理 ==
+user -> ui : ユーザー名・パスワードを入力し送信
+ui -> flask : POST /auth/login
+activate flask
+
+flask -> model : LoginUser.query.filter_by(username=username).first()
+activate model
+model -> db : SELECT * FROM login_users\nWHERE username = ?
+activate db
+db --> model : レコード返却
+deactivate db
+model --> flask : LoginUserオブジェクト
+deactivate model
+
+alt 認証成功（user != None かつ verify_password() = True）
+    flask -> model : user.verify_password(password)
+    model --> flask : True\n(check_password_hash)
+    flask -> flask : login_user(user)
+    flask -> ui : redirect(url_for('home'))
+    ui --> user : ホーム画面へリダイレクト
+else 認証失敗
+    flask -> ui : render_template('auth/login.html')
+    ui --> user : 「ユーザー名またはパスワードが異なります」表示
+end
+deactivate flask
+
+@enduml

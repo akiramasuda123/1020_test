@@ -1,0 +1,35 @@
+@startuml 利用者の新規登録
+autonumber
+title 利用者の新規登録 (GET・POST /users/users_new)
+
+actor 管理者 as user
+boundary "users/new.html" as ui
+control "users/views.py" as flask
+entity "User\n(models.py)" as model
+database "SQLite\n(users)" as db
+
+== フォーム表示 ==
+user -> ui : 「新規登録」リンクをクリック
+ui -> flask : GET /users/users_new
+flask -> ui : render_template('users/new.html', form=form)
+ui --> user : 登録フォーム表示
+
+== 登録処理 ==
+user -> ui : 利用者名・メールアドレスを入力し「登録」
+ui -> flask : POST /users/users_new
+activate flask
+
+flask -> model : User(name=..., email=...)
+activate model
+model -> db : db.session.add(user)\ndb.session.commit()
+activate db
+db --> model : 保存完了
+deactivate db
+model --> flask : Userオブジェクト
+deactivate model
+
+flask -> ui : redirect(url_for('users.users_list'))
+ui --> user : 利用者一覧画面へリダイレクト
+deactivate flask
+
+@enduml

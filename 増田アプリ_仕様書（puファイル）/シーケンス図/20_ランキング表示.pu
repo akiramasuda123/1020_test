@@ -1,0 +1,46 @@
+@startuml ランキング表示
+autonumber
+title ランキング表示 (GET /ranking/ranking_list)
+
+actor 管理者 as user
+boundary "ranking/ranking.html" as ui
+control "ranking/views.py" as flask
+entity "User / Book / BookGenre\n(models.py)" as model
+database "SQLite\n(users / books / book_genres)" as db
+
+user -> ui : ランキングページアクセス
+ui -> flask : GET /ranking/ranking_list
+activate flask
+
+flask -> model : User.query\n.filter(User.user_borrowed_count > 0)\n.order_by(User.user_borrowed_count.desc())\n.limit(5).all()
+activate model
+model -> db : SELECT * FROM users\nWHERE user_borrowed_count > 0\nORDER BY user_borrowed_count DESC\nLIMIT 5
+activate db
+db --> model : レコード返却
+deactivate db
+model --> flask : Userオブジェクトのリスト (TOP5)
+deactivate model
+
+flask -> model : Book.query\n.filter(Book.book_borrowed_count > 0)\n.order_by(Book.book_borrowed_count.desc())\n.limit(5).all()
+activate model
+model -> db : SELECT * FROM books\nWHERE book_borrowed_count > 0\nORDER BY book_borrowed_count DESC\nLIMIT 5
+activate db
+db --> model : レコード返却
+deactivate db
+model --> flask : Bookオブジェクトのリスト (TOP5)
+deactivate model
+
+flask -> model : BookGenre.query\n.filter(BookGenre.genre_borrowed_count > 0)\n.order_by(BookGenre.genre_borrowed_count.desc())\n.limit(5).all()
+activate model
+model -> db : SELECT * FROM book_genres\nWHERE genre_borrowed_count > 0\nORDER BY genre_borrowed_count DESC\nLIMIT 5
+activate db
+db --> model : レコード返却
+deactivate db
+model --> flask : BookGenreオブジェクトのリスト (TOP5)
+deactivate model
+
+flask -> ui : render_template('ranking/ranking.html',\nusers=users, books=books, genres=genres)
+ui --> user : ランキング表示\n(利用者・本・ジャンル 各TOP5)
+deactivate flask
+
+@enduml

@@ -1,0 +1,30 @@
+@startuml 利用者の一覧
+autonumber
+title 利用者の一覧表示 (GET /users/users_list)
+
+actor 管理者 as user
+boundary "users/list.html" as ui
+control "users/views.py" as flask
+entity "User\n(models.py)" as model
+database "SQLite\n(users)" as db
+
+user -> ui : 利用者一覧ページアクセス
+ui -> flask : GET /users/users_list
+activate flask
+
+flask -> model : User.query.all()
+activate model
+model -> db : SELECT * FROM users
+activate db
+db --> model : レコード一覧返却
+deactivate db
+model --> flask : Userオブジェクトのリスト
+deactivate model
+
+flask -> flask : pagination(users)\n→ ページネーション処理
+
+flask -> ui : render_template('users/list.html',\nusers=users_pag, users_all=users,\npage=page, total_pages=total_pages, form=form)
+ui --> user : 利用者一覧をページネーション付きで表示\n(ブラックリスト者は黒網掛け)
+deactivate flask
+
+@enduml

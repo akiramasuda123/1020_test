@@ -1,0 +1,39 @@
+@startuml 貸出履歴一覧
+autonumber
+title 貸出履歴一覧表示 (GET /borrows/borrows_deactive_list)
+
+actor 管理者 as user
+boundary "borrows/deactive.html" as ui
+control "borrows/views.py" as flask
+entity "Borrow / User / Book\n(models.py)" as model
+database "SQLite\n(borrows / users / books)" as db
+
+user -> ui : 貸出履歴一覧ページアクセス\n(?search=xxx&search_type=user|title)
+ui -> flask : GET /borrows/borrows_deactive_list
+activate flask
+
+flask -> model : db.session.query(Borrow, User.name, Book.title)\n.join(User, Borrow.user_id == User.user_id)\n.join(Book, Borrow.book_id == Book.book_id)\n.filter(Borrow.returned_at != None)
+activate model
+model -> db : SELECT borrows.*, users.name, books.title\nFROM borrows\nJOIN users ON borrows.user_id = users.user_id\nJOIN books ON borrows.book_id = books.book_id\nWHERE returned_at IS NOT NULL
+activate db
+db --> model : レコード一覧返却
+deactivate db
+model --> flask : (Borrow, name, title) タプルのリスト
+deactivate model
+
+alt 検索キーワードあり
+    flask -> model : search_type == "title" の場合\n.filter(Book.title.like("%keyword%"))\nそれ以外（利用者名）\n.filter(User.name.like("%keyword%"))
+    activate model
+    model -> db : WHERE title LIKE ? または name LIKE ?
+    db --> model : 絞り込み結果返却
+    model --> flask : 絞り込み済みリスト
+    deactivate model
+end
+
+flask -> flask : pagination(borrows_deactive_all)\n→ ページネーション処理
+
+flask -> ui : render_template('borrows/deactive.html',\nborrows_deactive=borrows_deactive_pag,\npage=page, total_pages=total_pages,\nsearch_keyword=search_keyword,\nsearch_type=search_type)
+ui --> user : 貸出履歴一覧表示（返却済）
+deactivate flask
+
+@enduml

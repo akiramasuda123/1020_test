@@ -1,0 +1,37 @@
+@startuml ジャンルの削除
+autonumber
+title ジャンルの削除 (POST /book_genres/book_genres_list/<id>/delete)
+
+actor 管理者 as user
+boundary "book_genres/list.html" as ui
+control "book_genres/views.py" as flask
+entity "BookGenre\n(models.py)" as model
+database "SQLite\n(book_genres)" as db
+
+user -> ui : 「削除」ボタンをクリック
+ui -> flask : POST /book_genres/book_genres_list/<id>/delete
+activate flask
+
+flask -> model : BookGenre.query.get_or_404(id)
+activate model
+model -> db : SELECT * FROM book_genres WHERE genre_id = ?
+activate db
+db --> model : レコード返却
+deactivate db
+model --> flask : BookGenreオブジェクト
+deactivate model
+
+flask -> model : db.session.delete(book_genre)\ndb.session.commit()
+activate model
+model -> db : DELETE FROM book_genres WHERE genre_id = ?
+activate db
+db --> model : 削除完了
+deactivate db
+model --> flask : 完了
+deactivate model
+
+flask -> ui : redirect(url_for('book_genres.book_genres_list'))
+ui --> user : ジャンル一覧画面へリダイレクト\n(「{ジャンル名}を削除しました」表示)
+deactivate flask
+
+@enduml

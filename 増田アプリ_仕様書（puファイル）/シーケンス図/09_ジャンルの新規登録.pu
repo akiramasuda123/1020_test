@@ -1,0 +1,35 @@
+@startuml ジャンルの新規登録
+autonumber
+title ジャンルの新規登録 (GET・POST /book_genres/book_genres_new)
+
+actor 管理者 as user
+boundary "book_genres/new.html" as ui
+control "book_genres/views.py" as flask
+entity "BookGenre\n(models.py)" as model
+database "SQLite\n(book_genres)" as db
+
+== フォーム表示 ==
+user -> ui : 「新規登録」リンクをクリック
+ui -> flask : GET /book_genres/book_genres_new
+flask -> ui : render_template('book_genres/new.html', form=form)
+ui --> user : 登録フォーム表示
+
+== 登録処理 ==
+user -> ui : ジャンル名を入力し「登録」
+ui -> flask : POST /book_genres/book_genres_new
+activate flask
+
+flask -> model : BookGenre(genre_name=...)
+activate model
+model -> db : db.session.add(book_genre)\ndb.session.commit()
+activate db
+db --> model : 保存完了
+deactivate db
+model --> flask : BookGenreオブジェクト
+deactivate model
+
+flask -> ui : redirect(url_for('book_genres.book_genres_list'))
+ui --> user : ジャンル一覧画面へリダイレクト
+deactivate flask
+
+@enduml

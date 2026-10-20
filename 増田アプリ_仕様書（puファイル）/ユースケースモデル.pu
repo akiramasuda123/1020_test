@@ -1,0 +1,82 @@
+@startuml ユースケースモデル
+left to right direction
+skinparam packageStyle rectangle
+
+actor "管理者\n(ログインユーザー)" as admin
+
+rectangle "図書館管理システム" {
+
+  package "認証" {
+    usecase "サインアップする" as UC_Signup
+    usecase "ログインする" as UC_Login
+    usecase "ログアウトする" as UC_Logout
+  }
+
+  package "本管理" {
+    usecase "本の一覧を閲覧する" as UC_BookList
+    usecase "本を新規登録する" as UC_BookNew
+    usecase "本情報を編集する" as UC_BookUpdate
+    usecase "本を削除する" as UC_BookDelete
+  }
+
+  package "ジャンル管理" {
+    usecase "ジャンルの一覧を閲覧する" as UC_GenreList
+    usecase "ジャンルを新規登録する" as UC_GenreNew
+    usecase "ジャンル名を編集する" as UC_GenreUpdate
+    usecase "ジャンルを削除する" as UC_GenreDelete
+  }
+
+  package "利用者管理" {
+    usecase "利用者の一覧を閲覧する" as UC_UserList
+    usecase "利用者を新規登録する" as UC_UserNew
+    usecase "利用者情報を編集する" as UC_UserUpdate
+    usecase "利用者を削除する" as UC_UserDelete
+  }
+
+  package "貸出管理" {
+    usecase "貸出中一覧を閲覧する\n(利用者名・本タイトルで検索)" as UC_BorrowActive
+    usecase "新規貸出を登録する" as UC_BorrowNew
+    usecase "返却処理をする\n(滞納チェック・ブラックリスト登録)" as UC_BorrowReturn
+    usecase "貸出履歴を閲覧する\n(利用者名・本タイトルで検索)" as UC_BorrowHistory
+  }
+
+  package "ランキング" {
+    usecase "貸出ランキングを閲覧する\n(利用者・本・ジャンル TOP5)" as UC_Ranking
+  }
+}
+
+admin --> UC_Signup
+admin --> UC_Login
+admin --> UC_Logout
+
+admin --> UC_BookList
+admin --> UC_BookNew
+admin --> UC_BookUpdate
+admin --> UC_BookDelete
+
+admin --> UC_GenreList
+admin --> UC_GenreNew
+admin --> UC_GenreUpdate
+admin --> UC_GenreDelete
+
+admin --> UC_UserList
+admin --> UC_UserNew
+admin --> UC_UserUpdate
+admin --> UC_UserDelete
+
+admin --> UC_BorrowActive
+admin --> UC_BorrowNew
+admin --> UC_BorrowReturn
+admin --> UC_BorrowHistory
+
+admin --> UC_Ranking
+
+note "ログインが必要\n(@login_required)" as N1
+UC_BookList .. N1
+UC_GenreList .. N1
+UC_UserList .. N1
+UC_BorrowNew .. N1
+UC_BorrowActive .. N1
+UC_Ranking .. N1
+
+@enduml

@@ -1,0 +1,47 @@
+@startuml 利用者の編集
+autonumber
+title 利用者の編集 (GET・POST /users/users_list/<id>/update)
+
+actor 管理者 as user
+boundary "users/update.html" as ui
+control "users/views.py" as flask
+entity "User\n(models.py)" as model
+database "SQLite\n(users)" as db
+
+== フォーム表示 ==
+user -> ui : 「編集」ボタンをクリック
+ui -> flask : GET /users/users_list/<id>/update
+activate flask
+
+flask -> model : User.query.get_or_404(id)
+activate model
+model -> db : SELECT * FROM users WHERE user_id = ?
+activate db
+db --> model : レコード返却
+deactivate db
+model --> flask : Userオブジェクト
+deactivate model
+
+flask -> ui : render_template('users/update.html', form=form)\n※既存データをformにセット
+ui --> user : 既存データが入った編集フォーム表示
+deactivate flask
+
+== 更新処理 ==
+user -> ui : 変更を入力し「更新」ボタンをクリック
+ui -> flask : POST /users/users_list/<id>/update
+activate flask
+
+flask -> model : user.name = ...\nuser.email = ...
+activate model
+model -> db : db.session.commit()
+activate db
+db --> model : 更新完了
+deactivate db
+model --> flask : 更新済みUserオブジェクト
+deactivate model
+
+flask -> ui : redirect(url_for('users.users_list'))
+ui --> user : 利用者一覧画面へリダイレクト
+deactivate flask
+
+@enduml

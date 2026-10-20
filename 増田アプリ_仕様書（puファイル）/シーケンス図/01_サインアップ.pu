@@ -1,0 +1,36 @@
+@startuml サインアップ
+autonumber
+title サインアップ (GET・POST /auth/signup)
+
+actor 管理者 as user
+boundary "signup.html" as ui
+control "auth/views.py" as flask
+entity "LoginUser\n(models.py)" as model
+database "SQLite\n(login_users)" as db
+
+== フォーム表示 ==
+user -> ui : サインアップページアクセス
+ui -> flask : GET /auth/signup
+flask -> ui : render_template('auth/signup.html', form=form)
+ui --> user : サインアップフォーム表示
+
+== 登録処理 ==
+user -> ui : ユーザー名・メール・パスワードを入力し送信
+ui -> flask : POST /auth/signup
+activate flask
+
+flask -> model : LoginUser(username, email, password)
+activate model
+model -> model : password.setter\n→ generate_password_hash()
+model -> db : db.session.add(user)\ndb.session.commit()
+activate db
+db --> model : 保存完了
+deactivate db
+model --> flask : LoginUserオブジェクト
+deactivate model
+
+flask -> ui : redirect(url_for('auth.login'))
+ui --> user : ログイン画面へリダイレクト\n(「ユーザーを登録しました」表示)
+deactivate flask
+
+@enduml

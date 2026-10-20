@@ -1,0 +1,30 @@
+@startuml 本の一覧
+autonumber
+title 本の一覧表示 (GET /books/books_list)
+
+actor 管理者 as user
+boundary "books/list.html" as ui
+control "books/views.py" as flask
+entity "Book / BookGenre\n(models.py)" as model
+database "SQLite\n(books / book_genres)" as db
+
+user -> ui : 本一覧ページアクセス
+ui -> flask : GET /books/books_list
+activate flask
+
+flask -> model : db.session.query(Book, BookGenre.genre_name)\n.join(BookGenre, Book.genre_id == BookGenre.genre_id)\n.all()
+activate model
+model -> db : SELECT books.*, book_genres.genre_name\nFROM books\nJOIN book_genres ON books.genre_id = book_genres.genre_id
+activate db
+db --> model : レコード一覧返却
+deactivate db
+model --> flask : (Book, genre_name) タプルのリスト
+deactivate model
+
+flask -> flask : pagination(books)\n→ ページネーション処理
+
+flask -> ui : render_template('books/list.html',\nbooks=books_pag, books_all=books,\npage=page, total_pages=total_pages, form=form)
+ui --> user : 本の一覧をページネーション付きで表示
+deactivate flask
+
+@enduml

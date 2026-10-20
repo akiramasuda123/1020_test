@@ -1,0 +1,19 @@
+@startuml ログアウト
+autonumber
+title ログアウト (GET /auth/logout)
+
+actor 管理者 as user
+boundary "login.html" as ui
+control "auth/views.py" as flask
+
+user -> ui : ログアウトリンクをクリック
+ui -> flask : GET /auth/logout
+activate flask
+
+flask -> flask : logout_user()\n(セッションからユーザー情報を削除)
+
+flask -> ui : redirect(url_for('auth.login'))
+ui --> user : ログイン画面へリダイレクト\n(「ログアウトしました」表示)
+deactivate flask
+
+@enduml

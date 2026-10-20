@@ -1,0 +1,30 @@
+@startuml ジャンルの一覧
+autonumber
+title ジャンルの一覧表示 (GET /book_genres/book_genres_list)
+
+actor 管理者 as user
+boundary "book_genres/list.html" as ui
+control "book_genres/views.py" as flask
+entity "BookGenre\n(models.py)" as model
+database "SQLite\n(book_genres)" as db
+
+user -> ui : ジャンル一覧ページアクセス
+ui -> flask : GET /book_genres/book_genres_list
+activate flask
+
+flask -> model : BookGenre.query.all()
+activate model
+model -> db : SELECT * FROM book_genres
+activate db
+db --> model : レコード一覧返却
+deactivate db
+model --> flask : BookGenreオブジェクトのリスト
+deactivate model
+
+flask -> flask : pagination(book_genres)\n→ ページネーション処理
+
+flask -> ui : render_template('book_genres/list.html',\nbook_genres=book_genres_pag,\nbook_genres_all=book_genres,\npage=page, total_pages=total_pages, form=form)
+ui --> user : ジャンル一覧をページネーション付きで表示
+deactivate flask
+
+@enduml

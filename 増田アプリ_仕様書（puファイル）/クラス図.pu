@@ -1,0 +1,80 @@
+@startuml クラス図
+title クラス図 (models.py)
+
+skinparam classAttributeIconSize 0
+
+' ===== LoginUser =====
+class LoginUser {
+  + id : Integer <<PK>>
+  + username : String(30) <<unique>>
+  + email : String(255) <<unique>>
+  - password_hash : String(255)
+  + created_at : DateTime
+  + updated_at : DateTime
+  --
+  + password <<setter>> : void
+  + verify_password(password) : bool
+}
+
+note right of LoginUser
+  db.Model, UserMixin を継承
+  password プロパティは読み取り不可
+  セット時に generate_password_hash() でハッシュ化
+  verify_password() は check_password_hash() で照合
+end note
+
+' ===== User =====
+class User {
+  + user_id : Integer <<PK>>
+  + name : String(255)
+  + email : String(255)
+  + blackflag : Boolean
+  + overdue_count : Integer
+  + user_borrowed_count : Integer
+}
+
+note right of User
+  blackflag = True の場合
+  新規貸出不可（ブラックリスト）
+  overdue_count >= 3 で blackflag = True
+end note
+
+' ===== Book =====
+class Book {
+  + book_id : Integer <<PK>>
+  + title : String(255)
+  + author : String(255)
+  + genre_id : Integer <<FK>>
+  + stock : Integer
+  + book_borrowed_count : Integer
+}
+
+' ===== BookGenre =====
+class BookGenre {
+  + genre_id : Integer <<PK>>
+  + genre_name : String(255)
+  + genre_borrowed_count : Integer
+}
+
+' ===== Borrow =====
+class Borrow {
+  + borrows_id : Integer <<PK>>
+  + user_id : Integer <<FK>>
+  + book_id : Integer <<FK>>
+  + borrowed_at : Date
+  + returned_at : Date
+  + due_date : Date
+}
+
+note right of Borrow
+  returned_at = NULL → 貸出中
+  returned_at != NULL → 返却済
+  returned_at > due_date → 滞納
+end note
+
+' ===== リレーション =====
+BookGenre "1" --o{ "多" Book : genre_id
+User "1" --o{ "多" Borrow : user_id
+Book "1" --o{ "多" Borrow : book_id
+
+@enduml
